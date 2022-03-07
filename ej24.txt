@@ -1,0 +1,38 @@
+set term ^;
+create or alter function BASICO4(OPER integer, numero integer)
+	returns date
+as
+declare CursorFecha cursor for (select fecha 
+    		  from compras
+             order by id_compra);
+declare variable aux date;
+declare variable aux2 date;
+begin
+
+	:aux=current_date;
+    
+    open CursorFecha;
+	fetch CursorFecha into :aux2;
+    while(ROW_COUNT>0) do
+    begin
+
+         fetch CursorFecha into :aux2;
+            IF (:aux2<:aux) THEN
+            	aux=:aux2;
+    END
+
+        
+	if (:OPER=1) then
+    begin
+    	return dateadd (:numero day to :aux );
+    end
+    if(:OPER=2) then
+	begin
+    	return dateadd (-:numero day to :aux );
+    end
+    close CursorFecha;
+    
+end^
+set term ;^
+select BASICO4(1,15),BASICO4(2,15)
+	from RDB$DATABASE

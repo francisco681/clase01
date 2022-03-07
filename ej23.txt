@@ -1,0 +1,36 @@
+/*22. Crea la función BASICO3 que tiene como parámetro OPER (entero) y NUMERO (entero) y
+devuelve una fecha. Esta función devuelve la fecha correspondiente a sumarle (OPER igual a 1)
+NUMERO o restarle (OPER igual a 2) NUMERO a la fecha de la compra más antigua. Se usará
+un cursor implícito en el que la sentencia SELECT se ordenará por id_compra y no por fecha. Se
+obtendrá la fecha más antigua en el cuerpo del cursor.*/
+
+
+set term ^;
+create or alter function BASICO3 (OPER integer, NUMERO integer)
+	returns date
+as
+declare fecha date;
+declare fecha_ant date;
+declare cursor_compras cursor for (select fecha from compras);
+begin
+	select fecha from compras order by id_compra rows 1 to 1 into :fecha_ant;
+
+	for select fecha from compras into :fecha do
+    begin
+    	if(fecha < fecha_ant) then
+        	fecha_ant = fecha;
+    end
+
+   if(:oper =1)THEN
+    	return dateadd(:numero day to :fecha_ant);
+   if(:oper =2)THEN
+    	return dateadd(-:numero day to :fecha_ant);
+   return CURRENT_DATE;
+END^
+
+set term ;^
+
+
+SELECT * FROM COMPRAS;
+
+select BASICO3(1,5), BASICO3(2,5),BASICO3(3,5) from RDB$DATABASE;
